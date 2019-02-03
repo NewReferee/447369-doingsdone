@@ -1,6 +1,49 @@
 <?php
-// показывать или нет выполненные задачи
 $show_complete_tasks = rand(0, 1);
+$initial_projects = ['Входящие', 'Учеба', 'Работа', 'Домашние дела', 'Авто'];
+$initial_tasks = [
+    'task_1' => [
+        'desc' => 'Собеседование в IT компании',
+        'date' => '01.12.2019',
+        'category' => 'Работа',
+        'state' => false
+    ],
+
+    'task_2' => [
+        'desc' => 'Выполнить тестовое задание',
+        'date' => '25.12.2019',
+        'category' => 'Работа',
+        'state' => false
+    ],
+
+    'task_3' => [
+        'desc' => 'Сделать задание первого раздела',
+        'date' => '21.12.2019',
+        'category' => 'Учёба',
+        'state' => true
+    ],
+
+    'task_4' => [
+        'desc' => 'Встреча с другом',
+        'date' => '22.12.2019',
+        'category' => 'Входящие',
+        'state' => false
+    ],
+
+    'task_5' => [
+        'desc' => 'Купить корм для кота',
+        'date' => 'Нет',
+        'category' => 'Домашние дела',
+        'state' => false
+    ],
+
+    'task_6' => [
+        'desc' => 'Заказать пиццу',
+        'date' => 'Нет',
+        'category' => 'Домашние дела',
+        'state' => false
+    ],
+]
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -46,10 +89,12 @@ $show_complete_tasks = rand(0, 1);
 
                 <nav class="main-navigation">
                     <ul class="main-navigation__list">
+                        <?php foreach ($initial_projects as $project_value): ?>
                         <li class="main-navigation__list-item">
-                            <a class="main-navigation__list-item-link" href="#">Название проекта</a>
+                            <a class="main-navigation__list-item-link" href="#"><?= $project_value; ?></a>
                             <span class="main-navigation__list-item-count">0</span>
                         </li>
+                        <?php endforeach; ?>
                     </ul>
                 </nav>
 
@@ -76,27 +121,29 @@ $show_complete_tasks = rand(0, 1);
 
                     <label class="checkbox">
                         <!--добавить сюда аттрибут "checked", если переменная $show_complete_tasks равна единице-->
-                        <input class="checkbox__input visually-hidden show_completed" type="checkbox">
+                        <input class="checkbox__input visually-hidden show_completed <?php if ($show_complete_tasks === 1):?>"checked<?php endif; ?> type="checkbox">
                         <span class="checkbox__text">Показывать выполненные</span>
                     </label>
                 </div>
 
                 <table class="tasks">
-                    <tr class="tasks__item task">
+                    <?php foreach ($initial_tasks as $task_number => $task_value): ?>
+                    <?php if (!$show_complete_tasks && $task_value['state']) continue; ?>
+                    <tr class="tasks__item task <?php if ($task_value['state']): ?> <?= 'task--completed'; ?> <?php endif; ?>">
                         <td class="task__select">
                             <label class="checkbox task__checkbox">
                                 <input class="checkbox__input visually-hidden task__checkbox" type="checkbox" value="1">
-                                <span class="checkbox__text">Сделать главную страницу Дела в порядке</span>
+                                <span class="checkbox__text"><?=$task_value['desc']?></span>
                             </label>
                         </td>
 
                         <td class="task__file">
-                            <a class="download-link" href="#">Home.psd</a>
+                            <a class="download-link" href="#"></a>
                         </td>
 
-                        <td class="task__date"></td>
+                        <td class="task__date"><?=$task_value['date']?></td>
                     </tr>
-                    <!--показывать следующий тег <tr/>, если переменная $show_complete_tasks равна единице-->
+                    <?php endforeach; ?>
                 </table>
             </main>
         </div>
