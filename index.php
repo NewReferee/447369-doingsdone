@@ -46,9 +46,11 @@ $tasks = [
 ];
 
 function amount_tasks ($tasks, $category) {
+$counter = 0;
     foreach ($tasks as $task_value) {
-        static $counter = 0;
-        if ($task_value['category'] === $category) $counter++;
+        if ($task_value['category'] === $category) {
+            $counter++;
+        }
     }
 return $counter;
 }
@@ -136,7 +138,7 @@ return $counter;
 
                 <table class="tasks">
                     <?php foreach ($tasks as $task_number => $task_value): ?>
-                    <?php if (!$show_complete_tasks && $task_value['state']) continue; ?>
+                    <?php if (!$show_complete_tasks && $task_value['state']) { continue; } ?>
                     <tr class="tasks__item task <?php if ($task_value['state']): ?> <?= 'task--completed'; ?> <?php endif; ?>">
                         <td class="task__select">
                             <label class="checkbox task__checkbox">
