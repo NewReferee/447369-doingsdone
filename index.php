@@ -1,7 +1,7 @@
 <?php
 $show_complete_tasks = rand(0, 1);
-$initial_projects = ['Входящие', 'Учеба', 'Работа', 'Домашние дела', 'Авто'];
-$initial_tasks = [
+$category_list = ['Входящие', 'Учеба', 'Работа', 'Домашние дела', 'Авто'];
+$tasks = [
     'task_1' => [
         'desc' => 'Собеседование в IT компании',
         'date' => '01.12.2019',
@@ -43,7 +43,16 @@ $initial_tasks = [
         'category' => 'Домашние дела',
         'state' => false
     ],
-]
+];
+
+function amount_tasks ($tasks, $category) {
+    foreach ($tasks as $task_value) {
+        static $counter = 0;
+        if ($task_value['category'] === $category) $counter++;
+    }
+return $counter;
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -89,10 +98,10 @@ $initial_tasks = [
 
                 <nav class="main-navigation">
                     <ul class="main-navigation__list">
-                        <?php foreach ($initial_projects as $project_value): ?>
+                        <?php foreach ($category_list as $category): ?>
                         <li class="main-navigation__list-item">
-                            <a class="main-navigation__list-item-link" href="#"><?= $project_value; ?></a>
-                            <span class="main-navigation__list-item-count">0</span>
+                            <a class="main-navigation__list-item-link" href="#"><?= $category; ?></a>
+                            <span class="main-navigation__list-item-count"><?= amount_tasks($tasks, $category) ?></span>
                         </li>
                         <?php endforeach; ?>
                     </ul>
@@ -120,14 +129,13 @@ $initial_tasks = [
                     </nav>
 
                     <label class="checkbox">
-                        <!--добавить сюда аттрибут "checked", если переменная $show_complete_tasks равна единице-->
                         <input class="checkbox__input visually-hidden show_completed <?php if ($show_complete_tasks === 1):?>"checked<?php endif; ?> type="checkbox">
                         <span class="checkbox__text">Показывать выполненные</span>
                     </label>
                 </div>
 
                 <table class="tasks">
-                    <?php foreach ($initial_tasks as $task_number => $task_value): ?>
+                    <?php foreach ($tasks as $task_number => $task_value): ?>
                     <?php if (!$show_complete_tasks && $task_value['state']) continue; ?>
                     <tr class="tasks__item task <?php if ($task_value['state']): ?> <?= 'task--completed'; ?> <?php endif; ?>">
                         <td class="task__select">
