@@ -6,7 +6,7 @@ $category_list = ['Входящие', 'Учеба', 'Работа', 'Домаш�
 $tasks = [
 	'task_1' => [
 			'desc' => 'Собеседование в IT компании',
-			'date' => '01.12.2019',
+			'date' => '09.02.2019',
 			'category' => 'Работа',
 			'state' => false
 	],
@@ -20,7 +20,7 @@ $tasks = [
 
 	'task_3' => [
 			'desc' => 'Сделать задание первого раздела',
-			'date' => '21.12.2019',
+			'date' => '09.02.2019',
 			'category' => 'Учёба',
 			'state' => true
 	],
@@ -49,17 +49,17 @@ $tasks = [
 
 // Защита от XSS
 
-foreach ($tasks as $task_key => $task_values) {
-	foreach ($task_values as $key => $value) {
-		$tasks[$task_key][$key] = htmlspecialchars($value);
-	}
-}
+xss_protect ($tasks);
+
+// Работа со временем
+$soon = get_soon($tasks);
 
 // Шаблонизация
 
 $page_content = include_template ('index.php', [
 	'tasks' => $tasks, 
-	'show_complete_tasks' => $show_complete_tasks
+	'show_complete_tasks' => $show_complete_tasks,
+	'soon' => $soon
 	]);
 
 $layout_content = include_template ('layout.php', [

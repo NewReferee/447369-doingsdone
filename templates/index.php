@@ -22,8 +22,8 @@
 
 <table class="tasks">
 	<?php foreach ($tasks as $task_number => $task_value): ?>
-	<?php if (!$show_complete_tasks && $task_value['state']) { continue; } ?>
-	<tr class="tasks__item task <?php if ($task_value['state']): ?> <?= 'task--completed'; ?> <?php endif; ?>">
+	<?php if (!$show_complete_tasks && $task_value['state']) { array_shift($soon); continue; } ?>
+	<tr class="tasks__item task <?php if ($task_value['state']): ?><?= 'task--completed'; ?><?php endif; ?> <?php if (array_shift($soon)): ?><?= 'task--important' ?><?php endif; ?>">
 			<td class="task__select">
 					<label class="checkbox task__checkbox">
 							<input class="checkbox__input visually-hidden task__checkbox" type="checkbox" value="1">
