@@ -1,5 +1,7 @@
 <?php 
 
+// Шаблонизатор
+
 function include_template($name, $data) {
 $name = 'templates/' . $name;
 $result = '';
@@ -16,6 +18,8 @@ if (!is_readable($name)) {
 
 	return $result;
 }
+
+// Подсчет количества задач для данной категории
 
 function get_tasks ($tasks, $category) {
 $counter = 0;

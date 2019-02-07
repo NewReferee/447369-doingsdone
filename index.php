@@ -47,6 +47,16 @@ $tasks = [
 	],
 ];
 
+// Защита от XSS
+
+foreach ($tasks as $task_key => $task_values) {
+	foreach ($task_values as $key => $value) {
+		$tasks[$task_key][$key] = htmlspecialchars($value);
+	}
+}
+
+// Шаблонизация
+
 $page_content = include_template ('index.php', [
 	'tasks' => $tasks, 
 	'show_complete_tasks' => $show_complete_tasks
