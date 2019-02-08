@@ -27,7 +27,7 @@
 			<td class="task__select">
 					<label class="checkbox task__checkbox">
 							<input class="checkbox__input visually-hidden task__checkbox" type="checkbox" value="1">
-							<span class="checkbox__text"><?=$task_value['desc']?></span>
+							<span class="checkbox__text"><?=htmlspecialchars($task_value['desc'])?></span>
 					</label>
 			</td>
 
@@ -35,7 +35,7 @@
 					<a class="download-link" href="#"></a>
 			</td>
 
-			<td class="task__date"><?=$task_value['date']?></td>
+			<td class="task__date"><?=htmlspecialchars($task_value['date'])?></td>
 	</tr>
 	<?php endforeach; ?>
 </table>
