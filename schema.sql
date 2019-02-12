@@ -6,14 +6,14 @@ USE doingsdone;
 
 CREATE TABLE category_list (
 category_id INT AUTO_INCREMENT PRIMARY KEY,
-user_name CHAR(32),
+user_id INT,
 category_name CHAR(32) UNIQUE
 );
 
 CREATE TABLE tasks (
 task_id INT AUTO_INCREMENT PRIMARY KEY,
-category_name CHAR(32),
-user_name CHAR(32),
+category_id INT,
+user_id INT,
 task_desc CHAR(64),
 date_create DATE,
 date_perform DATE,
