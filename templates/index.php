@@ -22,12 +22,12 @@
 
 <table class="tasks">
 	<?php foreach ($tasks as $task_number => $task_value): ?>
-	<?php if (!$show_complete_tasks && $task_value['task_state']) { array_shift($soon); continue; } ?>
-	<tr class="tasks__item task <?php if ($task_value['task_state']): ?><?= 'task--completed'; ?><?php endif; ?> <?php if (array_shift($soon)): ?><?= 'task--important' ?><?php endif; ?>">
+	<?php if (!$show_complete_tasks && $task_value['task_state']) { array_shift ($soon); continue; } ?>
+	<tr class="tasks__item task <?php if ($task_value['task_state']): ?><?= 'task--completed'; ?><?php endif; ?> <?php if (array_shift ($soon)): ?><?= 'task--important'; ?><?php endif; ?>">
 			<td class="task__select">
 					<label class="checkbox task__checkbox">
 							<input class="checkbox__input visually-hidden task__checkbox" type="checkbox" value="1">
-							<span class="checkbox__text"><?=htmlspecialchars($task_value['task_desc'])?></span>
+							<span class="checkbox__text"><?= htmlspecialchars ($task_value['task_desc']); ?></span>
 					</label>
 			</td>
 
@@ -35,7 +35,7 @@
 					<a class="download-link" href="#"></a>
 			</td>
 
-			<td class="task__date"><?=htmlspecialchars($task_value['date_require'])?></td>
+			<td class="task__date"><?= htmlspecialchars ($task_value['date_require']); ?></td>
 	</tr>
 	<?php endforeach; ?>
 </table>
