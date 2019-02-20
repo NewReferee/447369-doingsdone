@@ -44,6 +44,15 @@ function database_read ($connect, $database_command) {
 	}
 }
 
+// Запись полей в базу данных
+function database_write ($connect, $database_command) {
+$database_result = mysqli_query ($connect, $database_command);
+	if (!$database_result) {
+		print ('Ошибка запроса');
+		die();
+	}
+}
+
 // Защита от XSS
 function xss_protect (&$tasks) {
 	foreach ($tasks as $task_key => $task_values) {
@@ -92,12 +101,31 @@ function page_not_found ($lock = null, $connect = null, $category_id = null, $cu
 		$database_command = 
 		'SELECT category_name
 		FROM category_list
-		WHERE category_id = ' . $category_id . ' AND user_id = ' . $current_user . ';';
+		WHERE category_id = ' . intval($category_id) . ' AND user_id = ' . intval($current_user) . ';';
 		$result = database_read ($connect, $database_command);
 		if (empty($result)) {
 			return true;
 		}
 		return false;
 	}
+}
+
+// Валидация формы добавления задачи
+function form_valid ($name, $date, $current_category, $category_list) {
+	$errors = [];
+	date_default_timezone_set('Europe/Moscow');
+	if (!strtotime($date) || strtotime($date) + 86400 - time () < 0) {
+		$errors [] = 'date';
+	}
+	if (empty($name)) {
+		$errors [] = 'empty';
+	}
+	foreach ($category_list as $category_value) {
+		if ($current_category == $category_value['category_id']) {
+			return $errors;
+		}
+	}
+	$errors [] = 'exist';
+	return $errors;
 }
 ?>

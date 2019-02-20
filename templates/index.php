@@ -22,7 +22,7 @@
 
 <table class="tasks">
 	<?php foreach ($tasks as $task_number => $task_value): ?>
-	<?php if (!$show_complete_tasks && $task_value['task_state'] OR $task_value['category_id'] !== $category_id && $category_id !== "all") { array_shift ($soon); continue; } ?>
+	<?php if (!$show_complete_tasks && $task_value['task_state']) { array_shift ($soon); continue; } ?>
 	<tr class="tasks__item task <?php if ($task_value['task_state']): ?><?= 'task--completed'; ?><?php endif; ?> <?php if (array_shift ($soon)): ?><?= 'task--important'; ?><?php endif; ?>">
 			<td class="task__select">
 					<label class="checkbox task__checkbox">
@@ -32,7 +32,7 @@
 			</td>
 
 			<td class="task__file">
-					<a class="download-link" href="#"></a>
+				<a class="download-link" href="<?php if ($task_value['file_link'] == null): ?>#<?php else: ?><?= $domain . $task_value['file_link'] ?><?php endif; ?>"></a>
 			</td>
 
 			<td class="task__date"><?= htmlspecialchars ($task_value['date_require']); ?></td>
