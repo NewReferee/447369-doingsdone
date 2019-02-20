@@ -78,4 +78,26 @@ function get_soon ($tasks) {
 	}
 	return $soon;
 }
+
+// Если на вход ничего не подается, то проверяет доступен ли URI для чтения, если подается, то проверяет корректность параметров GET
+function page_not_found ($lock = null, $connect = null, $category_id = null, $current_user = null) {
+	if ($lock !== null) {
+		foreach ($lock as $key => $value) {
+			if ($_SERVER['REQUEST_URI'] == $value) {
+				return true;
+			}
+		}
+	}
+	else {
+		$database_command = 
+		'SELECT category_name
+		FROM category_list
+		WHERE category_id = ' . $category_id . ' AND user_id = ' . $current_user . ';';
+		$result = database_read ($connect, $database_command);
+		if (empty($result)) {
+			return true;
+		}
+		return false;
+	}
+}
 ?>
