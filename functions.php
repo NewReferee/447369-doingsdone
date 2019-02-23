@@ -45,9 +45,16 @@ function database_read ($connect, $database_command) {
 }
 
 // Запись полей в базу данных
-function database_write ($connect, $database_command) {
-$database_result = mysqli_query ($connect, $database_command);
-	if (!$database_result) {
+function database_write ($connect, $database_command, $data_values, $data_types) {	
+	$stmt = mysqli_prepare($connect, $database_command);
+	$types_stmt[] = $data_types;
+	foreach ($data_values as $data_number => $data_value) {
+		$data_stmt [] = $data_values[$data_number];
+	}
+	$data = array_merge($types_stmt, $data_stmt);
+	mysqli_stmt_bind_param($stmt, ...$data);
+	mysqli_stmt_execute($stmt);
+	if (!$stmt) {
 		print ('Ошибка запроса');
 		die();
 	}

@@ -51,20 +51,24 @@ else if (!empty(form_valid($_POST['name'], $_POST['date'], $_POST['project'], $c
 		]);
 }
 else {
+	$now = date('Y-m-d');
+	$selected_date = date('Y-m-d', strtotime($_POST['date']));
+
+	$database_command = 
+		'INSERT INTO tasks(tasks.category_id, tasks.user_id, tasks.task_desc, tasks.date_create, tasks.date_require, tasks.file_link)
+		VALUES (?, ?, ?, ?, ?, ?);';
+
+	$data_values = [intval($_POST['project']), intval($current_user), strval($_POST['name']), strval($now), strval($selected_date), strval($filelink)];
+	$data_types = 'iissss';	
+
 	$filelink = null;
 	if (isset($_FILES['preview'])) {
 		$filename = uniqid() . $_FILES['preview']['name'];
 		$filelink = 'userfiles/' . $filename;
 		move_uploaded_file($_FILES['preview']['tmp_name'], $filelink);
 	}
-	$database_command = 
-		'INSERT INTO tasks(tasks.category_id, tasks.user_id, tasks.task_desc, tasks.date_create, tasks.date_require, tasks.file_link)
-		VALUES (?, ?, ?, ?, ?, ?);';
-	$now = date('Y-m-d');
-	$selected_date = date('Y-m-d', strtotime($_POST['date']));		
-	$stmt = mysqli_prepare($connect, $database_command);
-	mysqli_stmt_bind_param($stmt, 'iissss', intval($_POST['project']), intval($current_user), strval($_POST['name']), strval($now), strval($selected_date), strval($filelink));
-	mysqli_stmt_execute($stmt);
+
+	database_write($connect, $database_command, $data_values, $data_types);
 	header("Location: ./");
 }
 
