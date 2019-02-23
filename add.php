@@ -51,6 +51,13 @@ else if (!empty(form_valid($_POST['name'], $_POST['date'], $_POST['project'], $c
 		]);
 }
 else {
+	$filelink = null;
+	if (isset($_FILES['preview'])) {
+		$filename = uniqid() . $_FILES['preview']['name'];
+		$filelink = 'userfiles/' . $filename;
+		move_uploaded_file($_FILES['preview']['tmp_name'], $filelink);
+	}	
+	
 	$now = date('Y-m-d');
 	$selected_date = date('Y-m-d', strtotime($_POST['date']));
 
@@ -60,13 +67,6 @@ else {
 
 	$data_values = [intval($_POST['project']), intval($current_user), strval($_POST['name']), strval($now), strval($selected_date), strval($filelink)];
 	$data_types = 'iissss';	
-
-	$filelink = null;
-	if (isset($_FILES['preview'])) {
-		$filename = uniqid() . $_FILES['preview']['name'];
-		$filelink = 'userfiles/' . $filename;
-		move_uploaded_file($_FILES['preview']['tmp_name'], $filelink);
-	}
 
 	database_write($connect, $database_command, $data_values, $data_types);
 	header("Location: ./");
