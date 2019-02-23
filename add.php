@@ -59,9 +59,12 @@ else {
 	}
 	$database_command = 
 		'INSERT INTO tasks(tasks.category_id, tasks.user_id, tasks.task_desc, tasks.date_create, tasks.date_require, tasks.file_link)
-		VALUES
-		(' . intval($_POST['project']) . ', ' . intval($current_user) . ', ' . '\'' . $_POST['name'] . '\'' . ', ' . '\'' . date('Y-m-d') . '\'' . ', ' . '\'' . date('Y-m-d', strtotime($_POST['date'])) . '\'' . ', ' . '\'' . $filelink . '\'' . ');';
-	database_write ($connect, $database_command);
+		VALUES (?, ?, ?, ?, ?, ?);';
+	$now = date('Y-m-d');
+	$selected_date = date('Y-m-d', strtotime($_POST['date']));		
+	$stmt = mysqli_prepare($connect, $database_command);
+	mysqli_stmt_bind_param($stmt, 'iissss', intval($_POST['project']), intval($current_user), strval($_POST['name']), strval($now), strval($selected_date), strval($filelink));
+	mysqli_stmt_execute($stmt);
 	header("Location: ./");
 }
 
