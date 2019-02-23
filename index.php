@@ -29,6 +29,7 @@ xss_protect ($tasks);
 
 // Работа со временем
 $soon = get_soon ($tasks);
+date_format_dmy ($tasks);
 
 // Шаблонизация
 if (!isset($_GET['category_id'])) {
@@ -47,6 +48,8 @@ else if (!page_not_found($connect, $_GET['category_id'], $current_user)) {
 		WHERE tasks.category_id = ' . intval($_GET['category_id']) . ';';
 
 	$tasks_current = database_read ($connect, $database_command);
+	$soon = get_soon ($tasks_current);
+	date_format_dmy ($tasks_current);
 
 	$page_content = include_template ('index.php', [
 		'tasks' => $tasks_current, 

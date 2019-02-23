@@ -135,4 +135,12 @@ function form_valid ($name, $date, $current_category, $category_list) {
 	$errors [] = 'exist';
 	return $errors;
 }
+
+function date_format_dmy (&$tasks) {
+	foreach ($tasks as $task_number => $task_value) {
+		if ($task_value['date_require'] !== null) {
+			$tasks[$task_number]['date_require'] = date('d.m.y', strtotime($task_value['date_require']));
+		}
+	}
+}
 ?>
