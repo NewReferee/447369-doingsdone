@@ -1,4 +1,5 @@
 <?php 
+require_once ('config.php');
 
 // Шаблонизатор
 function include_template ($name, $data) {
@@ -47,24 +48,21 @@ function database_read ($connect, $database_command) {
 // Запись полей в базу данных
 function database_write ($connect, $database_command, $data_values, $data_types) {	
 	$stmt = mysqli_prepare($connect, $database_command);
-	$types_stmt[] = $data_types;
-	foreach ($data_values as $data_number => $data_value) {
-		$data_stmt [] = $data_values[$data_number];
-	}
-	$data = array_merge($types_stmt, $data_stmt);
-	mysqli_stmt_bind_param($stmt, ...$data);
-	mysqli_stmt_execute($stmt);
 	if (!$stmt) {
 		print ('Ошибка запроса');
 		die();
-	}
+	}	
+	$types_array[] = $data_types;
+	$data = array_merge($types_array, $data_values);
+	mysqli_stmt_bind_param($stmt, ...$data);
+	mysqli_stmt_execute($stmt);
 }
 
 // Защита от XSS
-function xss_protect (&$tasks) {
-	foreach ($tasks as $task_key => $task_values) {
-		foreach ($task_values as $key => $value) {
-			$tasks[$task_key][$key] = htmlspecialchars ($value);
+function xss_protect (&$array) {
+	foreach ($array as $array_key => $array_values) {
+		foreach ($array_values as $key => $value) {
+			$array[$array_key][$key] = htmlspecialchars ($value);
 		}
 	}
 }
@@ -85,7 +83,7 @@ function get_soon ($tasks) {
 	date_default_timezone_set('Europe/Moscow');
 	foreach ($tasks as $task_values) {
 		$time_left = (strtotime ($task_values['date_require']) - time ()) / 3600;
-		if ($task_values['date_require'] != null && $time_left <= 24) {
+		if ($task_values['date_require'] !== "" && !$task_values['task_state'] && $time_left <= 24) {
 			$soon[] = true;
 		}
 		else {
@@ -99,7 +97,7 @@ function get_soon ($tasks) {
 function page_not_found ($lock = null, $connect = null, $category_id = null, $current_user = null) {
 	if ($lock !== null) {
 		foreach ($lock as $key => $value) {
-			if ($_SERVER['REQUEST_URI'] == $value) {
+			if ($_SERVER['REQUEST_URI'] === $value) {
 				return true;
 			}
 		}
@@ -117,28 +115,78 @@ function page_not_found ($lock = null, $connect = null, $category_id = null, $cu
 	}
 }
 
-// Валидация формы добавления задачи
-function form_valid ($name, $date, $current_category, $category_list) {
+// Валидация формы добавления проекта и задачи (type - либо project, либо task, если project, то 2-й и 3-й параметры не важны)
+function add_valid ($name, $date, $current_category, $category_list, $type) {
 	$errors = [];
-	date_default_timezone_set('Europe/Moscow');
-	if (!strtotime($date) || strtotime($date) + 86400 - time () < 0) {
-		$errors [] = 'date';
-	}
-	if (empty($name)) {
-		$errors [] = 'empty';
-	}
-	foreach ($category_list as $category_value) {
-		if ($current_category == $category_value['category_id']) {
+	switch ($type) {
+		case 'project':
+			if (empty($name)) {
+				$errors [] = 'empty';
+				return $errors;
+			}
+			foreach ($category_list as $category_value) {
+				if (mb_strlen($name, 'utf8') === mb_strlen($category_value['category_name'], 'utf8') && mb_stristr($name, $category_value['category_name'], false, 'utf8') === $name) {				
+					$errors [] = 'exist';
+				}
+			}
 			return $errors;
-		}
+		break;
+		
+		case 'task':
+			date_default_timezone_set('Europe/Moscow');
+			if (!strtotime($date) || strtotime($date) + 86400 - time () < 0) {
+				$errors [] = 'date';
+			}
+			if (empty($name)) {
+				$errors [] = 'empty';
+			}
+			foreach ($category_list as $category_value) {
+				if ($current_category === $category_value['category_id']) {
+					return $errors;
+				}
+			}
+			$errors [] = 'exist';
+			return $errors;
+		break;
 	}
-	$errors [] = 'exist';
+}
+
+// Валидация формы регистрации и входа
+function login_valid ($users, $name, $password, $email, $type) {
+	$errors = [];
+	switch ($type) {
+		case 'register':
+			if (empty($name)) {
+				$errors [] = 'empty-name';
+			}
+			else {
+				foreach ($users as $user_value) {
+					if ($user_value['user_name'] === $name) {
+						$errors [] = 'exist-name';
+					}
+				}
+			}
+			if (empty($password)) {
+				$errors [] = 'empty-password';
+			}
+			if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+				$errors [] = 'invalid-email';
+			}
+			else {
+				foreach ($users as $user_value) {
+					if ($user_value['user_email'] === $email) {
+						$errors [] = 'exist-email';
+					}
+				}
+			}
+		break;
+	}
 	return $errors;
 }
 
 function date_format_dmy (&$tasks) {
 	foreach ($tasks as $task_number => $task_value) {
-		if ($task_value['date_require'] !== null) {
+		if ($task_value['date_require'] !== "") {
 			$tasks[$task_number]['date_require'] = date('d.m.y', strtotime($task_value['date_require']));
 		}
 	}

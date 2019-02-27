@@ -11,6 +11,7 @@ $database_command =
 	WHERE user_id = ' . intval($current_user) .';';
 
 $category_list = database_read ($connect, $database_command);
+xss_protect ($category_list);
 
 $database_command =
 	'SELECT tasks.category_id, tasks.task_desc, tasks.date_require, category_list.category_name AS category_name, tasks.task_state
@@ -19,31 +20,29 @@ $database_command =
 	WHERE tasks.user_id = ' . intval($current_user) . ';';
 
 $tasks = database_read ($connect, $database_command);
-
-// Дополнительная защита от XSS
 xss_protect ($tasks);
 
 // Шаблонизация
 if (!isset($_POST['project'])) {
-	$page_content = include_template ('add.php', [
+	$page_content = include_template ('add_task.php', [
 			'category_list' => $category_list,
 			'errors' => []
 		]);
 
-	$layout_content = include_template ('layout.php', [
+	$layout_content = include_template ('layout-logged.php', [
 		'tasks' => $tasks,
 		'content' => $page_content, 
 		'title' => $page_title, 
 		'category_list' => $category_list
 		]);
 }
-else if (!empty(form_valid($_POST['name'], $_POST['date'], $_POST['project'], $category_list))) {
-	$page_content = include_template ('add.php', [
+else if (!empty(add_valid($_POST['name'], $_POST['date'], $_POST['project'], $category_list, 'task'))) {
+	$page_content = include_template ('add_task.php', [
 			'category_list' => $category_list,
-			'errors' => form_valid($_POST['name'], $_POST['date'], $_POST['project'], $category_list)
+			'errors' => add_valid($_POST['name'], $_POST['date'], $_POST['project'], $category_list, 'task')
 		]);
 
-	$layout_content = include_template ('layout.php', [
+	$layout_content = include_template ('layout-logged.php', [
 		'tasks' => $tasks,
 		'content' => $page_content, 
 		'title' => $page_title, 
