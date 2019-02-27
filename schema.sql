@@ -25,7 +25,7 @@ file_link CHAR(255)
 CREATE TABLE users (
 user_id INT AUTO_INCREMENT PRIMARY KEY,
 user_name CHAR(32) UNIQUE NOT NULL,
-user_password CHAR(64) NOT NULL,
+user_password TEXT NOT NULL,
 user_email CHAR(64) UNIQUE,
 date_register DATE
 );

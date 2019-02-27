@@ -51,7 +51,7 @@ function database_write ($connect, $database_command, $data_values, $data_types)
 	if (!$stmt) {
 		print ('Ошибка запроса');
 		die();
-	}	
+	}
 	$types_array[] = $data_types;
 	$data = array_merge($types_array, $data_values);
 	mysqli_stmt_bind_param($stmt, ...$data);
@@ -207,6 +207,7 @@ function login_valid ($users, $name, $password, $email, $type) {
 	return $errors;
 }
 
+// Перевод даты в формат d.m.Y
 function date_format_dmy (&$tasks) {
 	if ($tasks === []) {
 		return [];
@@ -216,5 +217,37 @@ function date_format_dmy (&$tasks) {
 			$tasks[$task_number]['date_require'] = date('d.m.Y', strtotime($task_value['date_require']));
 		}
 	}
+}
+
+// Преобразует ассоциативный массив задач в простой массив с названиями задач
+function get_tasks_list ($array) {
+	if ($array == []) {
+		return [];
+	}
+	foreach ($array as $array_value) {
+		$list[] = $array_value['task_desc'];
+	}
+	return $list;
+}
+
+// Переключает состояние чекбокса на противоположное для записи в БД
+function toggle_tasks_checkbox (&$task_checkbox_state) {
+	if ($task_checkbox_state[0]['task_state'] == 1) {
+		$task_checkbox_state[0]['task_state'] = 0;
+	}
+	else {
+		$task_checkbox_state[0]['task_state'] = 1;
+	}	
+}
+
+// Возвращает адреса c параметрами для сортировки
+function get_sort_url ($day) {
+	$sort_url = './?';
+	$_GET['sort'] = strval($day);
+	foreach ($_GET as $key => $value) {
+		$sort_url = $sort_url . $key . '=' . $value . '&';
+	}
+	$sort_url = substr($sort_url, 0, (mb_strlen($sort_url) - 1));
+	return $sort_url;
 }
 ?>
