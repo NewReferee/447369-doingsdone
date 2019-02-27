@@ -44,6 +44,7 @@ else {
 
 	database_write($connect, $database_command, $data_values, $data_types);	
 	header("Location: ./");
+	die ();
 }
 
 print ($layout_content)

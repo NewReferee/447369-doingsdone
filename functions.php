@@ -60,6 +60,9 @@ function database_write ($connect, $database_command, $data_values, $data_types)
 
 // Защита от XSS
 function xss_protect (&$array) {
+	if ($array === []) {
+		return [];
+	}
 	foreach ($array as $array_key => $array_values) {
 		foreach ($array_values as $key => $value) {
 			$array[$array_key][$key] = htmlspecialchars ($value);
@@ -80,6 +83,9 @@ function get_tasks ($tasks, $category) {
 
 // Срочность задач
 function get_soon ($tasks) {
+	if ($tasks === []) {
+		return [];
+	}
 	date_default_timezone_set('Europe/Moscow');
 	foreach ($tasks as $task_values) {
 		$time_left = (strtotime ($task_values['date_require']) - time ()) / 3600;
@@ -121,12 +127,12 @@ function add_valid ($name, $date, $current_category, $category_list, $type) {
 	switch ($type) {
 		case 'project':
 			if (empty($name)) {
-				$errors [] = 'empty';
+				$errors [] = 'empty-name';
 				return $errors;
 			}
 			foreach ($category_list as $category_value) {
 				if (mb_strlen($name, 'utf8') === mb_strlen($category_value['category_name'], 'utf8') && mb_stristr($name, $category_value['category_name'], false, 'utf8') === $name) {				
-					$errors [] = 'exist';
+					$errors [] = 'exist-category';
 				}
 			}
 			return $errors;
@@ -135,23 +141,23 @@ function add_valid ($name, $date, $current_category, $category_list, $type) {
 		case 'task':
 			date_default_timezone_set('Europe/Moscow');
 			if (!strtotime($date) || strtotime($date) + 86400 - time () < 0) {
-				$errors [] = 'date';
+				$errors [] = 'invalid-date';
 			}
 			if (empty($name)) {
-				$errors [] = 'empty';
+				$errors [] = 'empty-name';
 			}
 			foreach ($category_list as $category_value) {
 				if ($current_category === $category_value['category_id']) {
 					return $errors;
 				}
 			}
-			$errors [] = 'exist';
+			$errors [] = 'invalid-category';
 			return $errors;
 		break;
 	}
 }
 
-// Валидация формы регистрации и входа
+// Валидация формы регистрации и входа (type - либо register, либо login, если login, то 2-й параметр не важен)
 function login_valid ($users, $name, $password, $email, $type) {
 	$errors = [];
 	switch ($type) {
@@ -180,14 +186,34 @@ function login_valid ($users, $name, $password, $email, $type) {
 				}
 			}
 		break;
+		case 'login':
+			$errors [] = 'invalid-password';
+			if (empty($password)) {
+				$errors [] = 'empty-password';
+				$errors = array_diff($errors, ['invalid-password']);
+			}
+			else {
+				foreach ($users as $user_value) {
+					if (password_verify($password, $user_value['user_password'])) {
+						$errors = array_diff($errors, ['invalid-password']);
+					}
+				}
+			}
+			if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+				$errors [] = 'invalid-email';
+			}
+		break;
 	}
 	return $errors;
 }
 
 function date_format_dmy (&$tasks) {
+	if ($tasks === []) {
+		return [];
+	}
 	foreach ($tasks as $task_number => $task_value) {
 		if ($task_value['date_require'] !== "") {
-			$tasks[$task_number]['date_require'] = date('d.m.y', strtotime($task_value['date_require']));
+			$tasks[$task_number]['date_require'] = date('d.m.Y', strtotime($task_value['date_require']));
 		}
 	}
 }
