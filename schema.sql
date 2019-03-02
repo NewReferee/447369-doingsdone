@@ -33,4 +33,5 @@ date_register DATE
 CREATE INDEX date_create ON tasks(date_create);
 CREATE INDEX task_state ON tasks(task_state);
 CREATE INDEX user_id ON tasks(user_id);
-CREATE INDEX date_register ON users(date_register)
+CREATE INDEX date_register ON users(date_register);
+CREATE FULLTEXT INDEX tasks_search ON tasks(task_desc)
