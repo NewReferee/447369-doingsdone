@@ -22,6 +22,7 @@ else { // Если сессия есть, показываем главную с
 	$connect = database_init ("localhost", "root", "", "doingsdone");
 
 	if (isset($_POST['search'])) {
+		$_POST['search'] = trim($_POST['search']);
 		if (mb_strlen($_POST['search']) >= 3) { // Поиск по задачам
 			$database_command =
 				'SELECT tasks.task_id, tasks.category_id, tasks.task_desc, tasks.date_require, category_list.category_name AS category_name, tasks.task_state, tasks.file_link
