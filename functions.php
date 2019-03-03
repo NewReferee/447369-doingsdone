@@ -338,12 +338,7 @@ function toggle_tasks_checkbox (&$task_checkbox_state) {
 * @return string $sort_url готовый URL
 */
 function get_sort_url ($day) {
-	$sort_url = './?';
-	$_GET['sort'] = strval($day);
-	foreach ($_GET as $key => $value) {
-		$sort_url = $sort_url . $key . '=' . $value . '&';
-	}
-	$sort_url = substr($sort_url, 0, (mb_strlen($sort_url) - 1));
+	$sort_url = './?sort=' . strval($day);
 	return $sort_url;
 }
 

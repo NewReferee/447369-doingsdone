@@ -53,7 +53,7 @@ else {
 	database_write($connect, $database_command, $data_values, $data_types);
 
 	$database_command =
-		'SELECT tasks.category_id, tasks.task_desc, tasks.date_require, category_list.category_name AS category_name, tasks.task_state, tasks.file_link
+		'SELECT tasks.task_id, tasks.category_id, tasks.task_desc, tasks.date_require, category_list.category_name AS category_name, tasks.task_state, tasks.file_link
 		FROM tasks
 		JOIN category_list ON tasks.category_id = category_list.category_id
 		WHERE tasks.user_id = ?;';

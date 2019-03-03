@@ -64,6 +64,31 @@ else { // Если сессия есть, показываем главную с
 		}
 	}
 	else {
+		if (!isset($_GET['show_completed']) || ($_GET['show_completed'] == 1)) {
+			$show_complete_tasks = 1;
+		}
+		else {
+			$show_complete_tasks = 0;
+		}
+
+		if (isset($_GET['task_id'])) { // Смена статуса выполнения задания
+			$database_command =
+				'SELECT task_state
+				FROM tasks
+				WHERE task_id = ?;';
+			$task_checkbox_state = database_read ($connect, $database_command, [intval($_SESSION['tasks'][intval($_GET['task_id'])]['task_id'])], 'i');
+			toggle_tasks_checkbox ($task_checkbox_state);
+
+			$database_command =
+				'UPDATE tasks
+				SET tasks.task_state = ?
+				WHERE task_id = ' . intval($_SESSION['tasks'][intval($_GET['task_id'])]['task_id']) . ';';
+			$data_values = [intval($task_checkbox_state[0]['task_state'])];
+			$data_types = 'i';
+			database_write($connect, $database_command, $data_values, $data_types);
+			$_SESSION['tasks'][intval($_GET['task_id'])]['task_state'] = $task_checkbox_state[0]['task_state'];
+		}		
+
 		if (isset($_GET['sort'])) { // Если задачи надо отсортировать
 			switch ($_GET['sort']) {
 				case 'today':
@@ -90,7 +115,7 @@ else { // Если сессия есть, показываем главную с
 						WHERE tasks.user_id = ? AND tasks.date_require < (NOW() - INTERVAL 1 DAY)' . ';';				
 				break;
 			}	
-		}
+		}	
 		
 		if (!isset($_GET['sort']) || $_GET['sort'] == 'all') { // Если сортировать не надо
 		$database_command =
@@ -103,34 +128,17 @@ else { // Если сессия есть, показываем главную с
 		$current_tasks = database_read ($connect, $database_command, [intval($_SESSION['current_user'])], 'i');
 		xss_protect ($current_tasks);
 		$tasks_list = get_tasks_list($current_tasks);
-
-		if (!isset($_GET['show_completed']) || ($_GET['show_completed'] == 1)) {
-			$show_complete_tasks = 1;
-		}
-		else {
-			$show_complete_tasks = 0;
-		}
-
-		if (isset($_GET['task_id'])) { // Смена статуса выполнения задания
-			$database_command =
-				'SELECT task_state
-				FROM tasks
-				WHERE task_id = ?;';
-			$task_checkbox_state = database_read ($connect, $database_command, [intval($_SESSION['tasks'][intval($_GET['task_id'])]['task_id'])], 'i');
-			toggle_tasks_checkbox ($task_checkbox_state);
-
-		$database_command =
-				'UPDATE tasks
-				SET tasks.task_state = ?
-				WHERE task_id = ' . intval($_SESSION['tasks'][intval($_GET['task_id'])]['task_id']) . ';';
-		$data_values = [intval($task_checkbox_state[0]['task_state'])];
-		$data_types = 'i';
-		database_write($connect, $database_command, $data_values, $data_types);
-		$_SESSION['tasks'][intval($_GET['task_id'])]['task_state'] = $task_checkbox_state[0]['task_state'];
-		}
+		$soon = get_soon ($_SESSION['tasks']);
+		date_format_dmy ($_SESSION['tasks']);		
+		$page_content = include_template ('index.php', [
+			'tasks' => $_SESSION['tasks'],
+			'tasks_list' => $tasks_list,
+			'show_complete_tasks' => 1,
+			'soon' => $soon,
+			'domain' => $domain
+			]);
 
 		if (!isset($_GET['category_id'])) { // Если требуется показать все задачи
-
 			$soon = get_soon ($_SESSION['tasks']);
 			date_format_dmy ($_SESSION['tasks']);
 
