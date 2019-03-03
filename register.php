@@ -1,6 +1,6 @@
 <?php
 require_once ('functions.php');
-require_once ('config.php');
+require_once ('init.php');
 
 // Работа с базой данных
 $connect = database_init ("localhost", "root", "", "doingsdone");
@@ -9,7 +9,7 @@ $database_command =
 	'SELECT user_id, user_name, user_password, user_email
 	FROM users;';
 
-$users = database_read ($connect, $database_command);
+$users = database_read ($connect, $database_command, [], '');
 xss_protect ($users);
 
 if (!isset($_POST['name']) && !isset($_POST['password']) && !isset($_POST['email'])) {
@@ -42,7 +42,16 @@ else {
 	$data_values = [strval($_POST['name']), strval($_POST['password']), strval($_POST['email']), strval($now)];
 	$data_types = 'ssss';	
 
-	database_write($connect, $database_command, $data_values, $data_types);	
+	database_write($connect, $database_command, $data_values, $data_types);
+
+	$recipients = [];
+	$recipients[$_POST['email']] = $_POST['name'];
+	$message_text = '<p class="text">Здравствуйте, <u class="username">' . strval($_POST['name']) . '</u>. Регистрация на <b class="sitename">DOINGSDONE</b> прошла успешно, наслаждайтесь! ;)</p class="text">';
+	$message_text = include_template ('message_register.php', [
+		'message_text' => $message_text
+		]);
+	email_send (strval($message_text), $recipients, 'Регистрация на сайте');
+
 	header("Location: login.php");
 	die ();
 }

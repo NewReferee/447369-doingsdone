@@ -1,6 +1,6 @@
 <?php
 require_once ('functions.php');
-require_once ('config.php');
+require_once ('init.php');
 
 $connect = database_init ("localhost", "root", "", "doingsdone");
 
@@ -43,9 +43,9 @@ else {
 	$database_command = 
 		'SELECT category_id, category_name
 		FROM category_list
-		WHERE user_id = ' . $_SESSION['current_user']  . ';';
+		WHERE user_id = ?;';
 
-	$category_list = database_read($connect, $database_command);
+	$category_list = database_read($connect, $database_command, [intval($_SESSION['current_user'])], 'i');
 	$_SESSION['category_list'] = $category_list;
 
 	header("Location: ./");

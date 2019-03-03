@@ -1,6 +1,6 @@
 <?php
 require_once ('functions.php');
-require_once ('config.php');
+require_once ('init.php');
 
 if (page_not_found($lock)) {
 	http_response_code(404);
@@ -28,13 +28,15 @@ else { // Если сессия есть, показываем главную с
 				'SELECT tasks.task_id, tasks.category_id, tasks.task_desc, tasks.date_require, category_list.category_name AS category_name, tasks.task_state, tasks.file_link
 				FROM tasks
 				JOIN category_list ON tasks.category_id = category_list.category_id
-				WHERE tasks.user_id = ' . intval($_SESSION['current_user']) . ' AND MATCH(tasks.task_desc) AGAINST(\'' . $_POST['search'] . '*\' IN BOOLEAN MODE);';
-			$_SESSION['tasks'] = database_read ($connect, $database_command);
+				WHERE tasks.user_id = ? AND MATCH(tasks.task_desc) AGAINST(? IN BOOLEAN MODE)';
+			$current_tasks = database_read ($connect, $database_command, [intval($_SESSION['current_user']), strval($_POST['search']) . '*'], 'is');
+			xss_protect($current_tasks);
+			$tasks_list = get_tasks_list($current_tasks);
 			$soon = get_soon ($_SESSION['tasks']);
 			date_format_dmy ($_SESSION['tasks']);		
 			$page_content = include_template ('index.php', [
 				'tasks' => $_SESSION['tasks'],
-				'tasks_list' => get_tasks_list($_SESSION['tasks']),
+				'tasks_list' => $tasks_list,
 				'show_complete_tasks' => 1,
 				'soon' => $soon,
 				'domain' => $domain
@@ -46,13 +48,15 @@ else { // Если сессия есть, показываем главную с
 				'SELECT tasks.task_id, tasks.category_id, tasks.task_desc, tasks.date_require, category_list.category_name AS category_name, tasks.task_state, tasks.file_link
 				FROM tasks
 				JOIN category_list ON tasks.category_id = category_list.category_id
-				WHERE tasks.user_id = ' . intval($_SESSION['current_user']) . ' AND tasks.task_desc LIKE \'%' . strval($_POST['search'] . '%\';');			
-			$_SESSION['tasks'] = database_read ($connect, $database_command);
+				WHERE tasks.user_id = ? AND tasks.task_desc LIKE ?;';			
+			$current_tasks = database_read ($connect, $database_command, [intval($_SESSION['current_user']), strval('%' . $_POST['search']) . '%'], 'is');
+			xss_protect($current_tasks);
+			$tasks_list = get_tasks_list($current_tasks);
 			$soon = get_soon ($_SESSION['tasks']);
 			date_format_dmy ($_SESSION['tasks']);		
 			$page_content = include_template ('index.php', [
 				'tasks' => $_SESSION['tasks'],
-				'tasks_list' => get_tasks_list($_SESSION['tasks']),
+				'tasks_list' => $tasks_list,
 				'show_complete_tasks' => 1,
 				'soon' => $soon,
 				'domain' => $domain
@@ -67,7 +71,7 @@ else { // Если сессия есть, показываем главную с
 						'SELECT tasks.task_id, tasks.category_id, tasks.task_desc, tasks.date_require, category_list.category_name AS category_name, tasks.task_state, tasks.file_link
 						FROM tasks
 						JOIN category_list ON tasks.category_id = category_list.category_id
-						WHERE tasks.user_id = ' . intval($_SESSION['current_user']) . ' AND DAY(tasks.date_require) = DAY(NOW())' . ';';				
+						WHERE tasks.user_id = ? AND DAY(tasks.date_require) = DAY(NOW())' . ';';				
 				break;
 				
 				case 'tomorrow':
@@ -75,7 +79,7 @@ else { // Если сессия есть, показываем главную с
 						'SELECT tasks.task_id, tasks.category_id, tasks.task_desc, tasks.date_require, category_list.category_name AS category_name, tasks.task_state, tasks.file_link
 						FROM tasks
 						JOIN category_list ON tasks.category_id = category_list.category_id
-						WHERE tasks.user_id = ' . intval($_SESSION['current_user']) . ' AND DAY(tasks.date_require) = DAY(NOW() + INTERVAL 1 DAY)' . ';';				
+						WHERE tasks.user_id = ? AND DAY(tasks.date_require) = DAY(NOW() + INTERVAL 1 DAY)' . ';';				
 				break;
 
 				case 'expired':
@@ -83,7 +87,7 @@ else { // Если сессия есть, показываем главную с
 						'SELECT tasks.task_id, tasks.category_id, tasks.task_desc, tasks.date_require, category_list.category_name AS category_name, tasks.task_state, tasks.file_link
 						FROM tasks
 						JOIN category_list ON tasks.category_id = category_list.category_id
-						WHERE tasks.user_id = ' . intval($_SESSION['current_user']) . ' AND tasks.date_require < (NOW() - INTERVAL 1 DAY)' . ';';				
+						WHERE tasks.user_id = ? AND tasks.date_require < (NOW() - INTERVAL 1 DAY)' . ';';				
 				break;
 			}	
 		}
@@ -93,11 +97,12 @@ else { // Если сессия есть, показываем главную с
 			'SELECT tasks.task_id, tasks.category_id, tasks.task_desc, tasks.date_require, category_list.category_name AS category_name, tasks.task_state, tasks.file_link
 			FROM tasks
 			JOIN category_list ON tasks.category_id = category_list.category_id
-			WHERE tasks.user_id = ' . intval($_SESSION['current_user']) . ';';
+			WHERE tasks.user_id = ?;';
 		}
 
-		$_SESSION['tasks'] = database_read ($connect, $database_command);
-		xss_protect ($_SESSION['tasks']);
+		$current_tasks = database_read ($connect, $database_command, [intval($_SESSION['current_user'])], 'i');
+		xss_protect ($current_tasks);
+		$tasks_list = get_tasks_list($current_tasks);
 
 		if (!isset($_GET['show_completed']) || ($_GET['show_completed'] == 1)) {
 			$show_complete_tasks = 1;
@@ -110,8 +115,8 @@ else { // Если сессия есть, показываем главную с
 			$database_command =
 				'SELECT task_state
 				FROM tasks
-				WHERE task_id = ' . intval($_SESSION['tasks'][intval($_GET['task_id'])]['task_id']) . ';';
-			$task_checkbox_state = database_read ($connect, $database_command);
+				WHERE task_id = ?;';
+			$task_checkbox_state = database_read ($connect, $database_command, [intval($_SESSION['tasks'][intval($_GET['task_id'])]['task_id'])], 'i');
 			toggle_tasks_checkbox ($task_checkbox_state);
 
 		$database_command =
@@ -125,7 +130,6 @@ else { // Если сессия есть, показываем главную с
 		}
 
 		if (!isset($_GET['category_id'])) { // Если требуется показать все задачи
-			$tasks_list = get_tasks_list($_SESSION['tasks']);
 
 			$soon = get_soon ($_SESSION['tasks']);
 			date_format_dmy ($_SESSION['tasks']);
@@ -142,9 +146,9 @@ else { // Если сессия есть, показываем главную с
 			$database_command =
 				'SELECT tasks.task_desc
 				FROM tasks
-				WHERE tasks.category_id = ' . intval($_GET['category_id']) . ';';
+				WHERE tasks.category_id = ?;';
 
-			$tasks_current = database_read ($connect, $database_command);
+			$tasks_current = database_read ($connect, $database_command, [intval($_GET['category_id'])], 'i');
 			xss_protect ($tasks_current);
 			$tasks_list = get_tasks_list($tasks_current);
 

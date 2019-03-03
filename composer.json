@@ -1,0 +1,8 @@
+{
+    "name": "new_referee/doingsdone",
+    "description": "task manager",
+    "type": "project",
+    "require": {
+        "swiftmailer/swiftmailer": "^6.1"
+    }
+}

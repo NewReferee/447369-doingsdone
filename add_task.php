@@ -1,6 +1,6 @@
 <?php
 require_once ('functions.php');
-require_once ('config.php');
+require_once ('init.php');
 
 $connect = database_init ("localhost", "root", "", "doingsdone");
 
@@ -18,10 +18,10 @@ if (!isset($_POST['project'])) {
 		'current_user_name' => $_SESSION['current_user_name']
 		]);
 }
-else if (!empty(add_valid($_POST['name'], $_POST['date'], $_POST['project'], $_SESSION['category_list'], 'task'))) {
+else if (!empty(add_valid($_POST['name'], $_POST['date'], intval($_POST['project']), $_SESSION['category_list'], 'task'))) {
 	$page_content = include_template ('add_task.php', [
 			'category_list' => $_SESSION['category_list'],
-			'errors' => add_valid($_POST['name'], $_POST['date'], $_POST['project'], $_SESSION['category_list'], 'task')
+			'errors' => add_valid($_POST['name'], $_POST['date'], intval($_POST['project']), $_SESSION['category_list'], 'task')
 		]);
 
 	$layout_content = include_template ('layout-logged.php', [
@@ -56,9 +56,9 @@ else {
 		'SELECT tasks.category_id, tasks.task_desc, tasks.date_require, category_list.category_name AS category_name, tasks.task_state, tasks.file_link
 		FROM tasks
 		JOIN category_list ON tasks.category_id = category_list.category_id
-		WHERE tasks.user_id = ' . intval($_SESSION['current_user']) . ';';
+		WHERE tasks.user_id = ?;';
 
-	$tasks = database_read($connect, $database_command);
+	$tasks = database_read($connect, $database_command, [intval($_SESSION['current_user'])], 'i');
 	$_SESSION['tasks'] = $tasks;
 
 	header("Location: ./");
