@@ -358,6 +358,11 @@ function email_send ($message_text, $recipients, $subject) {
 	$message->setFrom(['keks@phpdemo.ru' => 'DoingsDone']);
 	$message->setBcc($recipients);
 	$message->setBody($message_text, 'text/html');
+	try {
 	$result = $mailer->send($message);
+	}
+	catch (Exception $e) {
+		$result = 0;
+	}
 }
 ?>
