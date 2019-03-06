@@ -1,6 +1,5 @@
 <?php
 require_once ('functions.php');
-require_once ('init.php');
 ?>
 
 <h2 class="content__main-heading">Список задач</h2>

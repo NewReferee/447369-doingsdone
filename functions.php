@@ -160,31 +160,21 @@ function get_soon ($tasks) {
 
 /**
 * Проверка доступны ли для пользователя запрошенные данные в БД и существуют ли таковые вообще
-* @param array $lock список URI недоступных для пользователя, задается в config.php
 * @param string $connect ресурс соединения
 * @param integer $category_id id проекта в параметрах запроса
 * @param string $current_user id пользователя
 * @return boolean найдена ли страница
 */
-function page_not_found ($lock = null, $connect = null, $category_id = null, $current_user = null) {
-	if ($lock !== null) {
-		foreach ($lock as $key => $value) {
-			if ($_SERVER['REQUEST_URI'] === $value) {
-				return true;
-			}
-		}
+function page_not_found ($connect = null, $category_id = null, $current_user = null) {
+	$database_command = 
+	'SELECT category_name
+	FROM category_list
+	WHERE category_id = ? AND user_id = ?;';
+	$result = database_read ($connect, $database_command, [intval($category_id), intval($current_user)], 'ii');
+	if (empty($result)) {
+		return true;
 	}
-	else {
-		$database_command = 
-		'SELECT category_name
-		FROM category_list
-		WHERE category_id = ? AND user_id = ?;';
-		$result = database_read ($connect, $database_command, [intval($category_id), intval($current_user)], 'ii');
-		if (empty($result)) {
-			return true;
-		}
-		return false;
-	}
+	return false;
 }
 
 /**

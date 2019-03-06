@@ -2,11 +2,6 @@
 require_once ('functions.php');
 require_once ('init.php');
 
-if (page_not_found($lock)) {
-	http_response_code(404);
-	die();
-}
-
 if (!isset($_SESSION['current_user'])) {  // Если сессия пуста, показываем гостевую страницу
 	$page_content = include_template ('guest.php', [
 
@@ -19,8 +14,6 @@ if (!isset($_SESSION['current_user'])) {  // Если сессия пуста, �
 	print ($layout_content);
 } 
 else { // Если сессия есть, показываем главную страницу
-	$connect = database_init ("localhost", "root", "", "doingsdone");
-
 	if (isset($_POST['search'])) {
 		$_POST['search'] = trim($_POST['search']);
 		if (mb_strlen($_POST['search']) >= 3) { // Поиск по задачам

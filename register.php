@@ -2,9 +2,6 @@
 require_once ('functions.php');
 require_once ('init.php');
 
-// Работа с базой данных
-$connect = database_init ("localhost", "root", "", "doingsdone");
-
 $database_command = 
 	'SELECT user_id, user_name, user_password, user_email
 	FROM users;';

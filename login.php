@@ -2,8 +2,6 @@
 require_once ('functions.php');
 require_once ('init.php');
 
-$connect = database_init ("localhost", "root", "", "doingsdone");
-
 $database_command = 
 	'SELECT user_id, user_name, user_password, user_email
 	FROM users;';
@@ -60,8 +58,8 @@ else {
 	xss_protect ($tasks);
 
 	$_SESSION = [
-		'current_user' => $current_user,
-		'current_user_name' => $current_user_name,
+		'current_user' => htmlspecialchars($current_user),
+		'current_user_name' => htmlspecialchars($current_user_name),
 		'category_list' => $category_list,
 		'tasks' => $tasks
 	];

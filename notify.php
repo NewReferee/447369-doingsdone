@@ -2,8 +2,6 @@
 require_once ('functions.php');
 require_once ('init.php');
 
-$connect = database_init ("localhost", "root", "", "doingsdone");
-
 $database_command = 
 	'SELECT tasks.user_id, users.user_name AS user_name, users.user_email AS user_email, tasks.task_desc, tasks.date_require
 	FROM tasks

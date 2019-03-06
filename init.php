@@ -1,4 +1,8 @@
 <?php
+require_once ('functions.php');
+
+// Подключение к базе данных
+$connect = database_init ("localhost", "root", "", "doingsdone");
 
 // Обеспечивает работу библиотек
 require_once ('vendor/autoload.php');
@@ -20,7 +24,4 @@ $domain = 'http://447369-doingsdone/';
 
 // Название сайта
 $page_title = 'Дела в порядке';
-
-// URI недоступные для чтения
-$lock = [];
 ?>

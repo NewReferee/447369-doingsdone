@@ -2,8 +2,6 @@
 require_once ('functions.php');
 require_once ('init.php');
 
-$connect = database_init ("localhost", "root", "", "doingsdone");
-
 if (!isset($_POST['project'])) {
 	$page_content = include_template ('add_task.php', [
 			'category_list' => $_SESSION['category_list'],
@@ -35,9 +33,11 @@ else if (!empty(add_valid($_POST['name'], $_POST['date'], intval($_POST['project
 else {
 	$filelink = null;
 	if (isset($_FILES['preview'])) {
-		$filename = uniqid() . $_FILES['preview']['name'];
-		$filelink = 'userfiles/' . $filename;
-		move_uploaded_file($_FILES['preview']['tmp_name'], $filelink);
+		if (!empty($_FILES['preview']['name'])) {
+			$filename = uniqid() . $_FILES['preview']['name'];
+			$filelink = 'userfiles/' . $filename;
+			move_uploaded_file($_FILES['preview']['tmp_name'], $filelink);
+		}
 	}	
 	
 	$now = date('Y-m-d');
@@ -59,6 +59,8 @@ else {
 		WHERE tasks.user_id = ?;';
 
 	$tasks = database_read($connect, $database_command, [intval($_SESSION['current_user'])], 'i');
+	xss_protect($tasks);
+	
 	$_SESSION['tasks'] = $tasks;
 
 	header("Location: ./");

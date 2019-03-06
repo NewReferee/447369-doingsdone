@@ -2,8 +2,6 @@
 require_once ('functions.php');
 require_once ('init.php');
 
-$connect = database_init ("localhost", "root", "", "doingsdone");
-
 if (!isset($_POST['name'])) {
 	$page_content = include_template ('add_project.php', [
 			'errors' => []
@@ -46,6 +44,7 @@ else {
 		WHERE user_id = ?;';
 
 	$category_list = database_read($connect, $database_command, [intval($_SESSION['current_user'])], 'i');
+
 	$_SESSION['category_list'] = $category_list;
 
 	header("Location: ./");
