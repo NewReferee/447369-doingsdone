@@ -115,7 +115,7 @@ function xss_protect (&$array) {
 	}
 	foreach ($array as $array_key => $array_values) {
 		foreach ($array_values as $key => $value) {
-			$array[$array_key][$key] = htmlspecialchars ($value);
+			$array[$array_key][$key] = strip_tags($value);
 		}
 	}
 }

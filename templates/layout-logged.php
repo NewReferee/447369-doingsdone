@@ -5,7 +5,7 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title><?= $title; ?></title>
+	<title><?= strip_tags($title); ?></title>
 	<link rel="stylesheet" href="css/normalize.css">
 	<link rel="stylesheet" href="css/style.css">
 	<link rel="stylesheet" href="css/flatpickr.min.css">
@@ -30,7 +30,7 @@
 									</div>
 
 									<div class="user-menu__data">
-											<p><?= $current_user_name ?></p>
+											<p><?= strip_tags($current_user_name) ?></p>
 
 											<a href="logout.php">Выйти</a>
 									</div>
@@ -46,8 +46,8 @@
 									<ul class="main-navigation__list">
 											<?php foreach ($category_list as $category_value): ?>
 											<li class="main-navigation__list-item">
-													<a class="main-navigation__list-item-link" href="<?= '/?sort=all&category_id=' . $category_value['category_id'] ?>"><?= $category_value['category_name']; ?></a>
-													<span class="main-navigation__list-item-count"><?= get_tasks ($tasks, $category_value['category_name']) ?></span>
+													<a class="main-navigation__list-item-link" href="<?= '/?sort=all&category_id=' . strip_tags($category_value['category_id']) ?>"><?= strip_tags($category_value['category_name']); ?></a>
+													<span class="main-navigation__list-item-count"><?= strip_tags(get_tasks($tasks, $category_value['category_name'])) ?></span>
 											</li>
 											<?php endforeach; ?>
 									</ul>

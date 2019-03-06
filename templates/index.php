@@ -31,15 +31,15 @@ require_once ('functions.php');
 			<td class="task__select">
 					<label class="checkbox task__checkbox">
 							<input class="checkbox__input visually-hidden task__checkbox" type="checkbox" value="<?= $task_number; ?>">
-							<span class="checkbox__text"><?= htmlspecialchars ($task_value['task_desc']); ?></span>
+							<span class="checkbox__text"><?= strip_tags($task_value['task_desc']); ?></span>
 					</label>
 			</td>
 
 			<td class="task__file">
-				<a class="download-link" href="<?php if ($task_value['file_link'] == null): ?>#<?php else: ?><?= $domain . $task_value['file_link'] ?><?php endif; ?>"></a>
+				<a class="download-link" href="<?php if ($task_value['file_link'] == null): ?>#<?php else: ?><?= strip_tags($domain . $task_value['file_link']) ?><?php endif; ?>"></a>
 			</td>
 
-			<td class="task__date"><?= htmlspecialchars ($task_value['date_require']); ?></td>
+			<td class="task__date"><?= strip_tags($task_value['date_require']); ?></td>
 	</tr>
 	<?php endforeach; ?>
 </table>
