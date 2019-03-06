@@ -41,13 +41,13 @@ else {
 	}	
 	
 	$now = date('Y-m-d');
-	$selected_date = date('Y-m-d', strtotime($_POST['date']));
+	$selected_date = date('Y-m-d', strtotime(strip_tags($_POST['date'])));
 
 	$database_command = 
 		'INSERT INTO tasks(tasks.category_id, tasks.user_id, tasks.task_desc, tasks.date_create, tasks.date_require, tasks.file_link)
 		VALUES (?, ?, ?, ?, ?, ?);';
 
-	$data_values = [intval($_POST['project']), intval($_SESSION['current_user']), strval($_POST['name']), strval($now), strval($selected_date), strval($filelink)];
+	$data_values = [intval(strip_tags($_POST['project'])), intval($_SESSION['current_user']), strval(strip_tags($_POST['name'])), strval($now), strval($selected_date), strval($filelink)];
 	$data_types = 'iissss';	
 
 	database_write($connect, $database_command, $data_values, $data_types);

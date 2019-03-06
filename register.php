@@ -36,14 +36,14 @@ else {
 		'INSERT INTO users(users.user_name, users.user_password, users.user_email, users.date_register)
 		VALUES (?, ?, ?, ?);';
 
-	$data_values = [strval($_POST['name']), strval($_POST['password']), strval($_POST['email']), strval($now)];
+	$data_values = [strval(strip_tags($_POST['name'])), strval($_POST['password']), strval($_POST['email']), strval($now)];
 	$data_types = 'ssss';	
 
 	database_write($connect, $database_command, $data_values, $data_types);
 
 	$recipients = [];
-	$recipients[$_POST['email']] = $_POST['name'];
-	$message_text = '<p class="text">Здравствуйте, <u class="username">' . strval($_POST['name']) . '</u>. Регистрация на <b class="sitename">DOINGSDONE</b> прошла успешно, наслаждайтесь! ;)</p class="text">';
+	$recipients[$_POST['email']] = strip_tags($_POST['name']);
+	$message_text = '<p class="text">Здравствуйте, <u class="username">' . strval(strip_tags($_POST['name'])) . '</u>. Регистрация на <b class="sitename">DOINGSDONE</b> прошла успешно, наслаждайтесь! ;)</p class="text">';
 	$message_text = include_template ('message_register.php', [
 		'message_text' => $message_text
 		]);

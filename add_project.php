@@ -33,7 +33,7 @@ else {
 		'INSERT INTO category_list(category_list.user_id, category_list.category_name)
 		VALUES (?, ?);';
 
-	$data_values = [intval($_SESSION['current_user']), strval(htmlspecialchars($_POST['name']))];
+	$data_values = [intval($_SESSION['current_user']), strval(strip_tags($_POST['name']))];
 	$data_types = 'is';
 
 	database_write($connect, $database_command, $data_values, $data_types);	

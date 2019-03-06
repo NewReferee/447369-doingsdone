@@ -58,8 +58,8 @@ else {
 	xss_protect ($tasks);
 
 	$_SESSION = [
-		'current_user' => htmlspecialchars($current_user),
-		'current_user_name' => htmlspecialchars($current_user_name),
+		'current_user' => strip_tags($current_user),
+		'current_user_name' => strip_tags($current_user_name),
 		'category_list' => $category_list,
 		'tasks' => $tasks
 	];
