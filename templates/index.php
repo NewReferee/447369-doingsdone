@@ -1,5 +1,5 @@
 <?php
-require_once ('functions.php');
+require_once ('init.php');
 ?>
 
 <h2 class="content__main-heading">Список задач</h2>
@@ -36,7 +36,7 @@ require_once ('functions.php');
 			</td>
 
 			<td class="task__file">
-				<a class="download-link" href="<?php if ($task_value['file_link'] == null): ?>#<?php else: ?><?= strip_tags($domain . $task_value['file_link']) ?><?php endif; ?>"></a>
+				<a class="download-link" href="<?php if (strval($task_value['file_link']) === ''): ?>#<?php else: ?><?= strip_tags($domain . $task_value['file_link']) ?><?php endif; ?>"></a>
 			</td>
 
 			<td class="task__date"><?= strip_tags($task_value['date_require']); ?></td>

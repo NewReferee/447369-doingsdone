@@ -1,5 +1,4 @@
 <?php
-require_once ('functions.php');
 require_once ('init.php');
 
 if (!isset($_SESSION['current_user'])) {  // Если сессия пуста, показываем гостевую страницу
@@ -57,7 +56,7 @@ else { // Если сессия есть, показываем главную с
 		}
 	}
 	else {
-		if (!isset($_GET['show_completed']) || ($_GET['show_completed'] == 1)) {
+		if (!isset($_GET['show_completed']) || (intval($_GET['show_completed']) === 1)) {
 			$show_complete_tasks = 1;
 		}
 		else {
@@ -110,7 +109,7 @@ else { // Если сессия есть, показываем главную с
 			}	
 		}	
 		
-		if (!isset($_GET['sort']) || $_GET['sort'] == 'all') { // Если сортировать не надо
+		if (!isset($_GET['sort']) || strval($_GET['sort']) === 'all') { // Если сортировать не надо
 		$database_command =
 			'SELECT tasks.task_id, tasks.category_id, tasks.task_desc, tasks.date_require, category_list.category_name AS category_name, tasks.task_state, tasks.file_link
 			FROM tasks

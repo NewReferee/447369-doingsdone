@@ -1,4 +1,4 @@
-<?php require_once ('functions.php'); ?>
+<?php require_once ('init.php'); ?>
 
 <!DOCTYPE html>
 <html lang="ru">

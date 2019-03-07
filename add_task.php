@@ -1,6 +1,17 @@
 <?php
-require_once ('functions.php');
 require_once ('init.php');
+
+if (!isset($_SESSION['current_user'])) {  // Если сессия пуста, показываем гостевую страницу
+	$page_content = include_template ('guest.php', [
+
+		]);
+	$layout_content = include_template ('layout-guest.php', [
+		'content' => $page_content, 
+		'title' => $page_title
+		]);
+
+	print ($layout_content);
+} 
 
 if (!isset($_POST['project'])) {
 	$page_content = include_template ('add_task.php', [

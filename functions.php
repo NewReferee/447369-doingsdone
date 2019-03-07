@@ -38,10 +38,8 @@ function database_init ($hostname, $username, $password, $servername) {
 		print ('Ошибка подключения: ' . mysqli_connect_error ());
 		die ();
 	}
-	else {
 	mysqli_set_charset ($connect, "utf8");
 	return $connect;
-	}
 }
 
 /**
@@ -300,7 +298,7 @@ function date_format_dmy (&$tasks) {
 * @return array $list простой массив с названиями задач
 */
 function get_tasks_list ($array) {
-	if ($array == []) {
+	if ($array === []) {
 		return [];
 	}
 	foreach ($array as $array_value) {
@@ -314,7 +312,7 @@ function get_tasks_list ($array) {
 * @param boolean $task_checkbox_state состояние чекбокса (вкл/выкл)
 */
 function toggle_tasks_checkbox (&$task_checkbox_state) {
-	if ($task_checkbox_state[0]['task_state'] == 1) {
+	if (intval($task_checkbox_state[0]['task_state']) === 1) {
 		$task_checkbox_state[0]['task_state'] = 0;
 	}
 	else {
